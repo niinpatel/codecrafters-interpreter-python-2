@@ -45,7 +45,14 @@ class Scanner:
             elif char == ";":
                 tokens.append(Token("SEMICOLON", ";", None))
             elif char == "/":
-                tokens.append(Token("SLASH", "/", None))
+                # slash can either be division or a comment
+                if self.current < len(self.source_code) and self.source_code[self.current] == "/":
+                    while self.current < len(self.source_code) and self.source_code[self.current] != "\n":
+                        self.current += 1
+                    self.line += 1
+                else:
+                    tokens.append(Token("SLASH", "/", None))
+
             elif char == "=":
                 if self.current < len(self.source_code) and self.source_code[self.current] == "=":
                     tokens.append(Token("EQUAL_EQUAL", "==", None))
