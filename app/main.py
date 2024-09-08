@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 import sys
 
 
@@ -124,9 +125,14 @@ class Scanner:
         return tokens, self.had_error
     
 
-class Expression:
-    pass
+class Expression(ABC):
+    @abstractmethod
+    def __str__(self) -> str:
+        pass
 
+    @abstractmethod
+    def evaluate(self):
+        pass
 
 class LiteralExpression(Expression):
     def __init__(self, value) -> None:
@@ -137,6 +143,9 @@ class LiteralExpression(Expression):
         if self.value is False: return "false"
         if self.value is None: return "nil"
         return f"{self.value}"
+
+    def evaluate(self):
+        return self.value
     
 class GroupExpression(Expression):
     def __init__(self, expression: Expression) -> None:
@@ -145,6 +154,9 @@ class GroupExpression(Expression):
     def __str__(self) -> str:
         return f"(group {self.expression})"
     
+    def evaluate(self):
+        return self.expression.evaluate()
+    
 class UnaryExpression(Expression):
     def __init__(self, operator: Token, expression: Expression) -> None:
         self.operator = operator
@@ -152,6 +164,12 @@ class UnaryExpression(Expression):
 
     def __str__(self) -> str:
         return f"({self.operator.lexeme} {self.expression})"
+    
+    def evaluate(self):
+        if self.operator.type == "MINUS":
+            return -1 * self.expression.evaluate()
+        else:
+            return not self.expression.evaluate
 
 class BinaryExpression(Expression):
     def __init__(self, operator: Token, left: Expression, right: Expression):
@@ -161,6 +179,17 @@ class BinaryExpression(Expression):
 
     def __str__(self) -> str:
         return f"({self.operator.lexeme} {self.left} {self.right})"
+    
+    def evaluate(self):
+        if self.operator.type == "PLUS":
+            return self.left.evaluate() + self.right.evaluate()
+        if self.operator.type == "MINUS":
+            return self.left.evaluate() - self.right.evaluate()
+        if self.operator.type == "STAR":
+            return self.left.evaluate() * self.right.evaluate()
+        if self.operator.type == "SLASH":
+            return self.left.evaluate() / self.right.evaluate()
+        # TODO: add more operations
 
 class Parser:
     def __init__(self, tokens):
@@ -258,6 +287,19 @@ class Parser:
         self.current += 1
 
 
+def lox_representation(value):
+    if value is True:
+        return "true"
+    if value is False:
+        return "false"
+    if value is None:
+        return "nil"
+    if isinstance(value, str):
+        return value
+    if value.is_integer():
+        return int(value)
+    return value
+
 def main():
     if len(sys.argv) < 3:
         print("Usage: ./your_program.sh tokenize <filename>", file=sys.stderr)
@@ -284,7 +326,16 @@ def main():
                 exit(65)
             expression = Parser(tokens).parse_expression()
             print(expression)
-            return 
+            return
+
+    if command == "evaluate":
+        with open(filename) as file:
+            file_contents = file.read()
+            tokens, had_error = Scanner(file_contents).scan()
+            if had_error: exit(65)
+            expression = Parser(tokens).parse_expression()
+            print(lox_representation(expression.evaluate()))
+            return
     
 
     print(f"Unknown command: {command}", file=sys.stderr)
