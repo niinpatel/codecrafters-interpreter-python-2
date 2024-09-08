@@ -189,8 +189,15 @@ class BinaryExpression(Expression):
         left_value = self.left.evaluate()
         right_value = self.right.evaluate()
         if self.operator.type == "PLUS":
+            if not isinstance(left_value, (float, str)) or not isinstance(right_value, (float, str)) or type(left_value) != type(right_value):
+                print("Operands must be two numbers or two strings.", file=sys.stderr)
+                exit(70)
             return left_value + right_value
         if self.operator.type == "MINUS":
+            if not isinstance(left_value, float) or not isinstance(right_value, float):
+                print("Operands must be two numbers or two strings.", file=sys.stderr)
+                exit(70)
+
             return left_value - right_value
         if self.operator.type == "STAR":
             if not isinstance(left_value, float) or not isinstance(right_value, float):
