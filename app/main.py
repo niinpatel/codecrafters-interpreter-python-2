@@ -95,6 +95,13 @@ class Scanner:
                 number_end = self.current
                 number_literal = self.source_code[number_start:number_end]
                 tokens.append(Token("NUMBER", number_literal, float(number_literal)))
+            elif char.isalpha() or char == "_":
+                identifier_start = self.current - 1
+                while self.current < len(self.source_code) and (self.source_code[self.current].isalnum() or self.source_code[self.current] == "_"):
+                    self.current += 1
+                identifier_end = self.current
+                identifier_literal = self.source_code[identifier_start:identifier_end]
+                tokens.append(Token("IDENTIFIER", identifier_literal, None))
             elif char == " ":
                 pass
             elif char == "\t":
