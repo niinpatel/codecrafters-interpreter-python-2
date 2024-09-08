@@ -30,6 +30,22 @@ class Scanner:
                 tokens.append(Token("LEFT_BRACE", "{", None))
             elif char == "}":
                 tokens.append(Token("RIGHT_BRACE", "}", None))
+            elif char == "*":
+                tokens.append(Token("STAR", "*", None))
+            elif char == ".":
+                tokens.append(Token("DOT", ".", None))
+            elif char == ",":
+                tokens.append(Token("COMMA", ",", None))
+            elif char == "+":
+                tokens.append(Token("PLUS", "+", None))
+            elif char == "-":
+                tokens.append(Token("MINUS", "-", None))
+            elif char == ";":
+                tokens.append(Token("SEMICOLON", ";", None))
+            elif char == "/":
+                tokens.append(Token("SLASH", "/", None))
+                
+                
         tokens.append(Token("EOF", "", None))
         return tokens
 
