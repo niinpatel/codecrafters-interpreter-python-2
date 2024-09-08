@@ -137,14 +137,22 @@ class LiteralExpression(Expression):
         if self.value is False: return "false"
         if self.value is None: return "nil"
         return f"{self.value}"
+    
+class GroupExpression(Expression):
+    def __init__(self, expression: Expression) -> None:
+        self.expression = expression
+
+    def __str__(self) -> str:
+        return f"(group {self.expression})"
 
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
         self.current = 0
 
-    def parse(self):
-        token = self.tokens[0]
+    def parse_expression(self):
+        self.current += 1
+        token = self.tokens[self.current - 1]
         if token.type == "TRUE":
             return LiteralExpression(True)
         if token.type == "FALSE":
@@ -153,6 +161,15 @@ class Parser:
             return LiteralExpression(None)
         if token.type in ["NUMBER", "STRING"]:
             return LiteralExpression(token.literal)
+        if token.type == "LEFT_PAREN":
+            expression = self.parse_expression()
+            self.consume("RIGHT_PAREN")
+            return GroupExpression(expression)
+
+    def consume(self, type):
+        # TODO: check if there is actually a right paren
+        self.current += 1
+
 
 def main():
     if len(sys.argv) < 3:
@@ -178,7 +195,7 @@ def main():
             tokens, had_error = Scanner(file_contents).scan()
             if had_error:
                 exit(65)
-            expression = Parser(tokens).parse()
+            expression = Parser(tokens).parse_expression()
             print(expression)
             return 
     
