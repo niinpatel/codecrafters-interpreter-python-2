@@ -22,15 +22,14 @@ class Scanner:
         while self.current < len(self.source_code):
             self.current += 1
             char = self.source_code[self.current - 1]
-            if char == " ":
-                continue
-            if char == "\n":
-                continue
             if char == "(":
                 tokens.append(Token("LEFT_PAREN", "(", None))
             elif char == ")":
                 tokens.append(Token("RIGHT_PAREN", ")", None))
-
+            elif char == "{":
+                tokens.append(Token("LEFT_BRACE", "{", None))
+            elif char == "}":
+                tokens.append(Token("RIGHT_BRACE", "}", None))
         tokens.append(Token("EOF", "", None))
         return tokens
 
