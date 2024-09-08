@@ -164,12 +164,17 @@ class UnaryExpression(Expression):
 
     def __str__(self) -> str:
         return f"({self.operator.lexeme} {self.expression})"
-    
+
     def evaluate(self):
+        value = self.expression.evaluate()
         if self.operator.type == "MINUS":
-            return -1 * self.expression.evaluate()
+            if not isinstance(value, float):
+                print(f"Operand must be a number.", file=sys.stderr)
+                exit(70)
+            return -1 * value
         else:
-            return not self.expression.evaluate()
+            return not value
+
 
 class BinaryExpression(Expression):
     def __init__(self, operator: Token, left: Expression, right: Expression):
