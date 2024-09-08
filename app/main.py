@@ -58,6 +58,18 @@ class Scanner:
                     self.current += 1
                 else:
                     tokens.append(Token("BANG", "!", None))
+            elif char == "<":
+                if self.current < len(self.source_code) and self.source_code[self.current] == "=":
+                    tokens.append(Token("LESS_EQUAL", "<=", None))
+                    self.current += 1
+                else:
+                    tokens.append(Token("LESS", "<", None))
+            elif char == ">":
+                if self.current < len(self.source_code) and self.source_code[self.current] == "=":
+                    tokens.append(Token("GREATER_EQUAL", ">=", None))
+                    self.current += 1
+                else:
+                    tokens.append(Token("GREATER", ">", None))
             elif char == " ":
                 pass
             elif char == "\t":
