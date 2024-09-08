@@ -182,6 +182,9 @@ class Parser:
             expression = self.parse_expression()
             self.consume("RIGHT_PAREN")
             return GroupExpression(expression)
+        
+        print(f"Error at {token.lexeme}: Expect expression.", file=sys.stderr)
+        exit(65)
     
     def parse_equality(self):
         expression = self.parse_comparison()
