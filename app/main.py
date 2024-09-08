@@ -122,7 +122,34 @@ class Scanner:
                 
         tokens.append(Token("EOF", "", None))
         return tokens, self.had_error
+    
 
+class Expression:
+    pass
+
+
+class LiteralExpression(Expression):
+    def __init__(self, value) -> None:
+        self.value = value
+
+    def __str__(self) -> str:
+        if self.value == True: return "true"
+        if self.value == False: return "false"
+        if self.value is None: return "nil"
+
+class Parser:
+    def __init__(self, tokens):
+        self.tokens = tokens
+        self.current = 0
+
+    def parse(self):
+        token = self.tokens[0]
+        if token.type == "TRUE":
+            return LiteralExpression(True)
+        if token.type == "FALSE":
+            return LiteralExpression(False)
+        if token.type == "NIL":
+            return LiteralExpression(None)
 
 def main():
     if len(sys.argv) < 3:
@@ -132,17 +159,31 @@ def main():
     command = sys.argv[1]
     filename = sys.argv[2]
 
-    if command != "tokenize":
-        print(f"Unknown command: {command}", file=sys.stderr)
-        exit(1)
+    if command == "tokenize":
+        with open(filename) as file:
+            file_contents = file.read()
+            tokens, had_error = Scanner(file_contents).scan()
+            for token in tokens:
+                print(token)
+            if had_error:
+                exit(65)
+            return
+        
+    if command == "parse":
+        with open(filename) as file:
+            file_contents = file.read()
+            tokens, had_error = Scanner(file_contents).scan()
+            if had_error:
+                exit(65)
+            expression = Parser(tokens).parse()
+            print(expression)
+            return 
+    
 
-    with open(filename) as file:
-        file_contents = file.read()
-        tokens, had_error = Scanner(file_contents).scan()
-        for token in tokens:
-            print(token)
-        if had_error:
-            exit(65)
+    print(f"Unknown command: {command}", file=sys.stderr)
+    exit(1)
+
+
 
 
 if __name__ == "__main__":
