@@ -151,7 +151,7 @@ class Parser:
             return LiteralExpression(False)
         if token.type == "NIL":
             return LiteralExpression(None)
-        if token.type == "NUMBER":
+        if token.type in ["NUMBER", "STRING"]:
             return LiteralExpression(token.literal)
 
 def main():
