@@ -88,6 +88,13 @@ class Scanner:
                 string_end = self.current - 1
                 string_literal = self.source_code[string_start:string_end]
                 tokens.append(Token("STRING", f'"{string_literal}"', string_literal))
+            elif char.isdigit():
+                number_start = self.current - 1
+                while self.current < len(self.source_code) and (self.source_code[self.current].isdigit() or self.source_code[self.current] == "."):
+                    self.current += 1
+                number_end = self.current
+                number_literal = self.source_code[number_start:number_end]
+                tokens.append(Token("NUMBER", number_literal, float(number_literal)))
             elif char == " ":
                 pass
             elif char == "\t":
