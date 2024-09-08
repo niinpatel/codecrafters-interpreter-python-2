@@ -49,7 +49,6 @@ class Scanner:
                 if self.current < len(self.source_code) and self.source_code[self.current] == "/":
                     while self.current < len(self.source_code) and self.source_code[self.current] != "\n":
                         self.current += 1
-                    self.line += 1
                 else:
                     tokens.append(Token("SLASH", "/", None))
 
