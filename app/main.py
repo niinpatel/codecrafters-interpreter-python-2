@@ -153,6 +153,14 @@ class UnaryExpression(Expression):
     def __str__(self) -> str:
         return f"({self.operator.lexeme} {self.expression})"
 
+class BinaryExpression(Expression):
+    def __init__(self, operator: Token, left: Expression, right: Expression):
+        self.operator = operator
+        self.left = left
+        self.right = right
+
+    def __str__(self) -> str:
+        return f"({self.operator.lexeme} {self.left} {self.right})"
 
 class Parser:
     def __init__(self, tokens):
@@ -175,17 +183,31 @@ class Parser:
             self.consume("RIGHT_PAREN")
             return GroupExpression(expression)
         
+    def parse_factor(self):
+        expression = self.parse_unary()
+
+        while self.current < len(self.tokens):
+            token = self.tokens[self.current]
+            if token.type not in ["STAR", "SLASH"]:
+                break
+            self.current += 1
+            right = self.parse_unary()
+            left = expression
+            expression = BinaryExpression(token, left, right)
+
+        return expression
+        
     def parse_unary(self):
         token = self.tokens[self.current]
         if token.type in ["BANG", "MINUS"]:
             self.current += 1
-            expression = self.parse_expression()
+            expression = self.parse_unary()
             return UnaryExpression(token, expression)
         return self.parse_primary()
 
 
     def parse_expression(self):
-        return self.parse_unary()
+        return self.parse_factor()
 
     def consume(self, type):
         # TODO: check if there is actually a right paren
