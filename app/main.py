@@ -159,7 +159,7 @@ class Parser:
         self.tokens = tokens
         self.current = 0
 
-    def parse_expression(self):
+    def parse_primary(self):
         self.current += 1
         token = self.tokens[self.current - 1]
         if token.type == "TRUE":
@@ -170,13 +170,22 @@ class Parser:
             return LiteralExpression(None)
         if token.type in ["NUMBER", "STRING"]:
             return LiteralExpression(token.literal)
-        if token.type in ["BANG", "MINUS"]:
-            expression = self.parse_expression()
-            return UnaryExpression(token, expression)
         if token.type == "LEFT_PAREN":
             expression = self.parse_expression()
             self.consume("RIGHT_PAREN")
             return GroupExpression(expression)
+        
+    def parse_unary(self):
+        token = self.tokens[self.current]
+        if token.type in ["BANG", "MINUS"]:
+            self.current += 1
+            expression = self.parse_expression()
+            return UnaryExpression(token, expression)
+        return self.parse_primary()
+
+
+    def parse_expression(self):
+        return self.parse_unary()
 
     def consume(self, type):
         # TODO: check if there is actually a right paren
