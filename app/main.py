@@ -183,6 +183,20 @@ class Parser:
             self.consume("RIGHT_PAREN")
             return GroupExpression(expression)
         
+    def parse_term(self):
+        expression = self.parse_factor()
+
+        while self.current < len(self.tokens):
+            token = self.tokens[self.current]
+            if token.type not in ["PLUS", "MINUS"]:
+                break
+            self.current += 1
+            right = self.parse_factor()
+            left = expression
+            expression = BinaryExpression(token, left, right)
+
+        return expression
+        
     def parse_factor(self):
         expression = self.parse_unary()
 
@@ -207,7 +221,7 @@ class Parser:
 
 
     def parse_expression(self):
-        return self.parse_factor()
+        return self.parse_term()
 
     def consume(self, type):
         # TODO: check if there is actually a right paren
