@@ -15,7 +15,9 @@ class Scanner:
     def __init__(self, source_code) -> None:
         self.source_code = source_code
         self.current = 0
-
+        self.line = 1
+        self.had_error = False
+        
     def scan(self):
         tokens = []
 
@@ -44,10 +46,22 @@ class Scanner:
                 tokens.append(Token("SEMICOLON", ";", None))
             elif char == "/":
                 tokens.append(Token("SLASH", "/", None))
-                
+            elif char == " ":
+                pass
+            elif char == "\t":
+                pass
+            elif char == "\r":
+                pass
+            elif char == "\f":
+                pass
+            elif char == "\n":
+                self.line += 1
+            else:
+                print(f"[line {self.line}] Error: Unexpected character: {char}", file=sys.stderr)
+                self.had_error = True
                 
         tokens.append(Token("EOF", "", None))
-        return tokens
+        return tokens, self.had_error
 
 
 def main():
@@ -64,9 +78,11 @@ def main():
 
     with open(filename) as file:
         file_contents = file.read()
-        tokens = Scanner(file_contents).scan()
+        tokens, had_error = Scanner(file_contents).scan()
         for token in tokens:
             print(token)
+        if had_error:
+            exit(65)
 
 
 if __name__ == "__main__":
