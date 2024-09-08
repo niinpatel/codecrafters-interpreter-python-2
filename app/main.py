@@ -169,7 +169,7 @@ class UnaryExpression(Expression):
         if self.operator.type == "MINUS":
             return -1 * self.expression.evaluate()
         else:
-            return not self.expression.evaluate
+            return not self.expression.evaluate()
 
 class BinaryExpression(Expression):
     def __init__(self, operator: Token, left: Expression, right: Expression):
