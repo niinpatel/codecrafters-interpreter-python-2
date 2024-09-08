@@ -52,6 +52,12 @@ class Scanner:
                     self.current += 1
                 else:
                     tokens.append(Token("EQUAL", "=", None))
+            elif char == "!":
+                if self.current < len(self.source_code) and self.source_code[self.current] == "=":
+                    tokens.append(Token("BANG_EQUAL", "!=", None))
+                    self.current += 1
+                else:
+                    tokens.append(Token("BANG", "!", None))
             elif char == " ":
                 pass
             elif char == "\t":
