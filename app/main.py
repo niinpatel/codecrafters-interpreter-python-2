@@ -76,6 +76,18 @@ class Scanner:
                     self.current += 1
                 else:
                     tokens.append(Token("GREATER", ">", None))
+            elif char == "\"":
+                string_start = self.current
+                while self.current < len(self.source_code) and self.source_code[self.current] != '"':
+                    self.current += 1
+                if self.current >= len(self.source_code):
+                    print(f"[line {self.line}] Error: Unterminated string.", file=sys.stderr)
+                    self.had_error = True
+                    continue
+                self.current += 1
+                string_end = self.current - 1
+                string_literal = self.source_code[string_start:string_end]
+                tokens.append(Token("STRING", f'"{string_literal}"', string_literal))
             elif char == " ":
                 pass
             elif char == "\t":
