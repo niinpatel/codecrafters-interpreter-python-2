@@ -195,7 +195,7 @@ class BinaryExpression(Expression):
             return left_value + right_value
         if self.operator.type == "MINUS":
             if not isinstance(left_value, float) or not isinstance(right_value, float):
-                print("Operands must be two numbers or two strings.", file=sys.stderr)
+                print("Operands must be numbers.", file=sys.stderr)
                 exit(70)
 
             return left_value - right_value
@@ -214,12 +214,28 @@ class BinaryExpression(Expression):
         if self.operator.type == "EQUAL_EQUAL":
             return left_value == right_value
         if self.operator.type == "GREATER":
+            if not isinstance(left_value, float) or not isinstance(right_value, float):
+                print("Operands must be numbers.", file=sys.stderr)
+                exit(70)
+
             return left_value > right_value
         if self.operator.type == "GREATER_EQUAL":
+            if not isinstance(left_value, float) or not isinstance(right_value, float):
+                print("Operands must be numbers.", file=sys.stderr)
+                exit(70)
+
             return left_value >= right_value
         if self.operator.type == "LESS":
+            if not isinstance(left_value, float) or not isinstance(right_value, float):
+                print("Operands must be numbers.", file=sys.stderr)
+                exit(70)
+
             return left_value < right_value
         if self.operator.type == "LESS_EQUAL":
+            if not isinstance(left_value, float) or not isinstance(right_value, float):
+                print("Operands must be numbers.", file=sys.stderr)
+                exit(70)
+
             return left_value <= right_value
 
 class Parser:
