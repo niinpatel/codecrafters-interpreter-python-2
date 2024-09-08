@@ -101,7 +101,11 @@ class Scanner:
                     self.current += 1
                 identifier_end = self.current
                 identifier_literal = self.source_code[identifier_start:identifier_end]
-                tokens.append(Token("IDENTIFIER", identifier_literal, None))
+                if identifier_literal in ["and", "class", "else", "false", "for", "fun", "if", "nil", "or", "print", "return", "super", "this", "true", "var", "while"]:
+                    # reserved words
+                    tokens.append(Token(identifier_literal.upper(), identifier_literal, None))
+                else:
+                    tokens.append(Token("IDENTIFIER", identifier_literal, None))
             elif char == " ":
                 pass
             elif char == "\t":
