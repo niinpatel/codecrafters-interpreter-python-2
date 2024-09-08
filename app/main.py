@@ -189,7 +189,18 @@ class BinaryExpression(Expression):
             return self.left.evaluate() * self.right.evaluate()
         if self.operator.type == "SLASH":
             return self.left.evaluate() / self.right.evaluate()
-        # TODO: add more operations
+        if self.operator.type == "BANG_EQUAL":
+            return self.left.evaluate() != self.right.evaluate()
+        if self.operator.type == "EQUAL_EQUAL":
+            return self.left.evaluate() == self.right.evaluate()
+        if self.operator.type == "GREATER":
+            return self.left.evaluate() > self.right.evaluate()
+        if self.operator.type == "GREATER_EQUAL":
+            return self.left.evaluate() >= self.right.evaluate()
+        if self.operator.type == "LESS":
+            return self.left.evaluate() < self.right.evaluate()
+        if self.operator.type == "LESS_EQUAL":
+            return self.left.evaluate() <= self.right.evaluate()
 
 class Parser:
     def __init__(self, tokens):
