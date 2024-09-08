@@ -144,6 +144,15 @@ class GroupExpression(Expression):
 
     def __str__(self) -> str:
         return f"(group {self.expression})"
+    
+class UnaryExpression(Expression):
+    def __init__(self, operator: Token, expression: Expression) -> None:
+        self.operator = operator
+        self.expression = expression
+
+    def __str__(self) -> str:
+        return f"({self.operator.lexeme} {self.expression})"
+
 
 class Parser:
     def __init__(self, tokens):
@@ -161,6 +170,9 @@ class Parser:
             return LiteralExpression(None)
         if token.type in ["NUMBER", "STRING"]:
             return LiteralExpression(token.literal)
+        if token.type in ["BANG", "MINUS"]:
+            expression = self.parse_expression()
+            return UnaryExpression(token, expression)
         if token.type == "LEFT_PAREN":
             expression = self.parse_expression()
             self.consume("RIGHT_PAREN")
