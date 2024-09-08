@@ -133,9 +133,10 @@ class LiteralExpression(Expression):
         self.value = value
 
     def __str__(self) -> str:
-        if self.value == True: return "true"
-        if self.value == False: return "false"
+        if self.value is True: return "true"
+        if self.value is False: return "false"
         if self.value is None: return "nil"
+        return f"{self.value}"
 
 class Parser:
     def __init__(self, tokens):
@@ -150,6 +151,8 @@ class Parser:
             return LiteralExpression(False)
         if token.type == "NIL":
             return LiteralExpression(None)
+        if token.type == "NUMBER":
+            return LiteralExpression(token.literal)
 
 def main():
     if len(sys.argv) < 3:
