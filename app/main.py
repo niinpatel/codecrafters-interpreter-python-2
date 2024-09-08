@@ -186,26 +186,34 @@ class BinaryExpression(Expression):
         return f"({self.operator.lexeme} {self.left} {self.right})"
     
     def evaluate(self):
+        left_value = self.left.evaluate()
+        right_value = self.right.evaluate()
         if self.operator.type == "PLUS":
-            return self.left.evaluate() + self.right.evaluate()
+            return left_value + right_value
         if self.operator.type == "MINUS":
-            return self.left.evaluate() - self.right.evaluate()
+            return left_value - right_value
         if self.operator.type == "STAR":
-            return self.left.evaluate() * self.right.evaluate()
+            if not isinstance(left_value, float) or not isinstance(right_value, float):
+                print("Operands must be numbers.", file=sys.stderr)
+                exit(70)
+            return left_value * right_value
         if self.operator.type == "SLASH":
-            return self.left.evaluate() / self.right.evaluate()
+            if not isinstance(left_value, float) or not isinstance(right_value, float):
+                print("Operands must be numbers.", file=sys.stderr)
+                exit(70)
+            return left_value / right_value
         if self.operator.type == "BANG_EQUAL":
-            return self.left.evaluate() != self.right.evaluate()
+            return left_value != right_value
         if self.operator.type == "EQUAL_EQUAL":
-            return self.left.evaluate() == self.right.evaluate()
+            return left_value == right_value
         if self.operator.type == "GREATER":
-            return self.left.evaluate() > self.right.evaluate()
+            return left_value > right_value
         if self.operator.type == "GREATER_EQUAL":
-            return self.left.evaluate() >= self.right.evaluate()
+            return left_value >= right_value
         if self.operator.type == "LESS":
-            return self.left.evaluate() < self.right.evaluate()
+            return left_value < right_value
         if self.operator.type == "LESS_EQUAL":
-            return self.left.evaluate() <= self.right.evaluate()
+            return left_value <= right_value
 
 class Parser:
     def __init__(self, tokens):
