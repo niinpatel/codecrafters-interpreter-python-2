@@ -332,12 +332,9 @@ class Parser:
 
     def parse_statements(self):
         statements = []
-        while self.current < len(self.tokens):
+        while self.tokens[self.current].type != "EOF":
             statement = self.parse_statement()
-            if statement:
-                statements.append(statement)
-            else:
-                break
+            statements.append(statement)
         return statements
 
     def parse_statement(self):
@@ -347,6 +344,10 @@ class Parser:
             expression = self.parse_expression()
             self.consume("SEMICOLON")
             return PrintStatement(expression)
+        
+        expression = self.parse_expression()
+        self.consume("SEMICOLON");
+        return ExpressionStatement(expression)
 
     def consume(self, type):
         # TODO: check if there is actually a right paren
@@ -364,6 +365,13 @@ class PrintStatement(Statement):
 
     def execute(self):
         print(lox_representation(self.expression.evaluate()))
+
+class ExpressionStatement(Statement):
+    def __init__(self, expression: Expression):
+        self.expression = expression
+    
+    def execute(self):
+        self.expression.evaluate()
 
 def lox_representation(value):
     if value is True:

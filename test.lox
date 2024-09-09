@@ -1,1 +1,2 @@
-print "Hello, world";
+(27 + 28 - 26) > (68 - 27) * 2;
+print !true;
