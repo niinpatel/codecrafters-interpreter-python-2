@@ -328,11 +328,42 @@ class Parser:
 
     def parse_expression(self):
         return self.parse_equality()
+    
+
+    def parse_statements(self):
+        statements = []
+        while self.current < len(self.tokens):
+            statement = self.parse_statement()
+            if statement:
+                statements.append(statement)
+            else:
+                break
+        return statements
+
+    def parse_statement(self):
+        token = self.tokens[self.current] 
+        if token.type == "PRINT":
+            self.current += 1
+            expression = self.parse_expression()
+            self.consume("SEMICOLON")
+            return PrintStatement(expression)
 
     def consume(self, type):
         # TODO: check if there is actually a right paren
         self.current += 1
 
+
+class Statement(ABC):
+    @abstractmethod
+    def execute(self): pass
+
+
+class PrintStatement(Statement):
+    def __init__(self, expression: Expression):
+        self.expression = expression
+
+    def execute(self):
+        print(lox_representation(self.expression.evaluate()))
 
 def lox_representation(value):
     if value is True:
@@ -383,6 +414,17 @@ def main():
             expression = Parser(tokens).parse_expression()
             print(lox_representation(expression.evaluate()))
             return
+        
+    if command == "run":
+        with open(filename) as file:
+            file_contents = file.read()
+            tokens, had_error = Scanner(file_contents).scan()
+            if had_error: exit(65)
+            statements = Parser(tokens).parse_statements()
+            for statement in statements:
+                statement.execute()
+            return
+
     
 
     print(f"Unknown command: {command}", file=sys.stderr)
