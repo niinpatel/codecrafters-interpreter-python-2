@@ -11,6 +11,7 @@ class Token:
     def __repr__(self) -> str:
         return f"{self.type} {self.lexeme} {"null" if self.literal is None else self.literal}"
 
+ENVIRONMENT = {}
 
 class Scanner:
     def __init__(self, source_code) -> None:
@@ -147,6 +148,16 @@ class LiteralExpression(Expression):
     def evaluate(self):
         return self.value
     
+class VariableExpression(Expression):
+    def __init__(self, name: str):
+        self.name = name
+
+    def evaluate(self):
+        return ENVIRONMENT[self.name]
+    
+    def __str__(self) -> str:
+        return f"(identifier {self.name})"
+    
 class GroupExpression(Expression):
     def __init__(self, expression: Expression) -> None:
         self.expression = expression
@@ -258,6 +269,8 @@ class Parser:
             expression = self.parse_expression()
             self.consume("RIGHT_PAREN")
             return GroupExpression(expression)
+        if token.type == "IDENTIFIER":
+            return VariableExpression(token.lexeme)
         
         print(f"Error at {token.lexeme}: Expect expression.", file=sys.stderr)
         exit(65)
@@ -345,13 +358,26 @@ class Parser:
             self.consume("SEMICOLON")
             return PrintStatement(expression)
         
+        if token.type == "VAR":
+            self.current += 1
+            identifer = self.consume("IDENTIFIER")
+            self.consume("EQUAL")
+            expression = self.parse_expression()
+            self.consume("SEMICOLON")
+            return VariableDeclarationStatement(identifer.lexeme, expression)
+        
         expression = self.parse_expression()
         self.consume("SEMICOLON");
         return ExpressionStatement(expression)
 
     def consume(self, type):
-        # TODO: check if there is actually a right paren
-        self.current += 1
+        if self.current < len(self.tokens) and self.tokens[self.current].type == type:
+            self.current += 1
+            return self.tokens[self.current - 1]
+        
+        print(f"Error at {self.tokens[self.current - 1].lexeme}: Expected {type}.", file=sys.stderr)
+        exit(65)
+    
 
 
 class Statement(ABC):
@@ -372,6 +398,15 @@ class ExpressionStatement(Statement):
     
     def execute(self):
         self.expression.evaluate()
+
+class VariableDeclarationStatement(Statement):
+    def __init__(self, name: str, expression: Expression):
+        self.expression = expression
+        self.name = name
+    
+    def execute(self):
+        ENVIRONMENT[self.name] = self.expression.evaluate()
+
 
 def lox_representation(value):
     if value is True:
