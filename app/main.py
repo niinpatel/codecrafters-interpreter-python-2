@@ -153,6 +153,9 @@ class VariableExpression(Expression):
         self.name = name
 
     def evaluate(self):
+        if self.name not in ENVIRONMENT:
+            print(f"Undefined variable '{self.name}'", file=sys.stderr)
+            exit(70)
         return ENVIRONMENT[self.name]
     
     def __str__(self) -> str:
