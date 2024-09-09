@@ -1,10 +1,8 @@
-var a;
-var b;
-var c;
-a = b = c = 1;
-print a;
-print b;
-var b = 2;
-var a = b = 1;
-print a;
-print c;
+{
+    var hello = 88;
+    {
+        var foo = 88;
+        print foo;
+    }
+    print hello;
+}

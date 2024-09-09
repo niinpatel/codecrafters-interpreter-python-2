@@ -399,9 +399,22 @@ class Parser:
             self.consume("SEMICOLON")
             return VariableDeclarationStatement(identifer.lexeme, expression)
         
+        if token.type == "LEFT_BRACE":
+            self.current += 1
+            return BlockStatement(self.parse_block())
+
         expression = self.parse_expression()
         self.consume("SEMICOLON");
         return ExpressionStatement(expression)
+    
+    def parse_block(self):
+        statements = []
+
+        while self.current < len(self.tokens) and self.tokens[self.current].type != "RIGHT_BRACE":
+            statements.append(self.parse_statement())
+        
+        self.consume("RIGHT_BRACE")
+        return statements
 
     def consume(self, type):
         if self.current < len(self.tokens) and self.tokens[self.current].type == type:
@@ -443,6 +456,14 @@ class VariableDeclarationStatement(Statement):
         else:
             ENVIRONMENT[self.name] = self.expression.evaluate()
 
+class BlockStatement(Statement):
+    def __init__(self, statements: list[Statement]):
+        self.statements = statements
+
+    def execute(self):
+        for statement in self.statements:
+            # TODO: Implement variable scope
+            statement.execute()
 
 def lox_representation(value):
     if value is True:
