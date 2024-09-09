@@ -364,7 +364,11 @@ class Parser:
         if token.type == "VAR":
             self.current += 1
             identifer = self.consume("IDENTIFIER")
-            self.consume("EQUAL")
+            if not self.tokens[self.current].type == "EQUAL":
+                self.consume("SEMICOLON")
+                return VariableDeclarationStatement(identifer.lexeme, None)
+
+            self.current += 1
             expression = self.parse_expression()
             self.consume("SEMICOLON")
             return VariableDeclarationStatement(identifer.lexeme, expression)
@@ -403,12 +407,15 @@ class ExpressionStatement(Statement):
         self.expression.evaluate()
 
 class VariableDeclarationStatement(Statement):
-    def __init__(self, name: str, expression: Expression):
+    def __init__(self, name: str, expression: Expression | None):
         self.expression = expression
         self.name = name
     
     def execute(self):
-        ENVIRONMENT[self.name] = self.expression.evaluate()
+        if self.expression is None:
+            ENVIRONMENT[self.name] = None
+        else:
+            ENVIRONMENT[self.name] = self.expression.evaluate()
 
 
 def lox_representation(value):
