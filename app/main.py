@@ -252,6 +252,18 @@ class BinaryExpression(Expression):
 
             return left_value <= right_value
 
+class AssignmentExpression(Expression):
+    def __init__(self, name, expression):
+        self.name = name
+        self.expression = expression
+
+    def __str__(self) -> str:
+        return f"(assignment {self.name} {self.expression})"
+
+    def evaluate(self):
+        ENVIRONMENT[self.name] = self.expression.evaluate()
+        return ENVIRONMENT[self.name]
+
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -277,7 +289,21 @@ class Parser:
         
         print(f"Error at {token.lexeme}: Expect expression.", file=sys.stderr)
         exit(65)
-    
+
+    def parse_assignment(self):
+        expression = self.parse_equality()
+
+        if self.current < len(self.tokens):
+            token = self.tokens[self.current]
+            if token.type == "EQUAL":
+                self.current += 1
+
+                if isinstance(expression, VariableExpression):
+                    right = self.parse_assignment()
+                    return AssignmentExpression(expression.name, right)
+
+        return expression
+
     def parse_equality(self):
         expression = self.parse_comparison()
 
@@ -343,7 +369,7 @@ class Parser:
 
 
     def parse_expression(self):
-        return self.parse_equality()
+        return self.parse_assignment()
     
 
     def parse_statements(self):
