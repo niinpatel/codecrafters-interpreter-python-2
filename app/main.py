@@ -461,9 +461,12 @@ class BlockStatement(Statement):
         self.statements = statements
 
     def execute(self):
+        global ENVIRONMENT
+        parent_environment = ENVIRONMENT
+        ENVIRONMENT = {**parent_environment}  # this ensures lexical scoping
         for statement in self.statements:
-            # TODO: Implement variable scope
             statement.execute()
+        ENVIRONMENT = parent_environment
 
 def lox_representation(value):
     if value is True:

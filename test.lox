@@ -1,8 +1,7 @@
+var world = (28 * 38) - 94;
 {
-    var hello = 88;
-    {
-        var foo = 88;
-        print foo;
-    }
-    print hello;
+    var foo = "quz" + "34";
+    print foo;
+    var world  = 10;
 }
+print world;
